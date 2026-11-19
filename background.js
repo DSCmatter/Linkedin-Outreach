@@ -3,7 +3,7 @@
 // Messages are written by a local template for free, or by an AI model with the user's own key.
 importScripts('utils/message.js', 'utils/providers.js');
 
-const SETTINGS_KEYS = ['userApiKey', 'aiProvider', 'aiModel', 'aiBaseUrl', 'userName', 'userBio', 'offerResume', 'resumeSkills', 'resumeCompanies'];
+const SETTINGS_KEYS = ['userApiKey', 'aiEnabled', 'aiProvider', 'aiModel', 'aiBaseUrl', 'userName', 'userBio', 'offerResume', 'resumeSkills', 'resumeCompanies'];
 
 const HANDLERS = {
   scrapeProfile:   () => scrapeActiveTab(),
@@ -60,7 +60,7 @@ async function generateMessage({ profile, ...request }) {
 async function refineMessage({ profile, message, instruction }) {
   const settings = await getSettings();
   const conn     = resolveConnection(settings);
-  if (!conn) throw new Error('Rewriting with instructions needs an AI API key. Add one in Settings.');
+  if (!conn) throw new Error('Rewriting with instructions needs AI Mode. Add an API key in Settings, or switch AI Mode on.');
   return callAI(conn, [{ type: 'text', text: refinePrompt(profile, { message, instruction }, settings) }], 400);
 }
 
@@ -90,7 +90,7 @@ function normalizeProfile(raw = {}) {
 
 async function parseResume(base64) {
   const conn = resolveConnection(await getSettings());
-  if (!conn) throw new Error('Add an AI API key first. The model reads the resume once.');
+  if (!conn) throw new Error('Reading a resume needs AI Mode. Add an API key in Settings, or switch AI Mode on.');
   if (!conn.provider.readsPdf) {
     throw new Error(`${conn.provider.label} can't read PDFs here. Write your pitch by hand, or use an Anthropic, OpenAI, Gemini or OpenRouter key.`);
   }

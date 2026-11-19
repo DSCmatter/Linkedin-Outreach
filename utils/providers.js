@@ -60,11 +60,12 @@ const PROVIDERS = {
 function openAICompatible({ label, keyPattern, baseUrl, defaultModel, readsPdf }) {
   return {
     label, keyPattern, defaultModel, readsPdf, baseUrl,
-    request: ({ apiKey, model, baseUrl: customBase }, parts) => ({
+    request: ({ apiKey, model, baseUrl: customBase }, parts, maxTokens) => ({
       url: `${(baseUrl || customBase || '').replace(/\/+$/, '')}/chat/completions`,
       headers: { Authorization: `Bearer ${apiKey}` },
       body: {
         model,
+        max_tokens: maxTokens,
         messages: [{
           role: 'user',
           content: parts.every(p => p.type === 'text')
@@ -90,10 +91,15 @@ function detectProvider(apiKey) {
   return DETECT_ORDER.find(id => PROVIDERS[id].keyPattern.test(key)) || null;
 }
 
+// AI Mode needs a key, and the user can switch it off without deleting the key.
+function aiActive({ userApiKey, aiEnabled }) {
+  return Boolean(String(userApiKey || '').trim()) && aiEnabled !== false;
+}
+
 // Turns stored settings into one complete connection, or explains what is missing.
-function resolveConnection({ userApiKey, aiProvider, aiModel, aiBaseUrl }) {
-  const apiKey = String(userApiKey || '').trim();
-  if (!apiKey) return null;
+function resolveConnection({ userApiKey, aiEnabled, aiProvider, aiModel, aiBaseUrl }) {
+  if (!aiActive({ userApiKey, aiEnabled })) return null;
+  const apiKey = String(userApiKey).trim();
   const id = aiProvider && aiProvider !== 'auto' ? aiProvider : detectProvider(apiKey);
   if (!id || !PROVIDERS[id]) {
     throw new Error("Couldn't tell which AI provider this key is for. Pick it under Provider, or choose Custom and add its base URL.");

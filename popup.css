@@ -562,16 +562,43 @@ body {
 .key-validation-status.invalid { background: var(--error-bg);   color: var(--error);   }
 
 /* Key status chip in header */
-.key-status {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 20px;
+.mode-switch {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
 }
-
-.key-status.active   { background: var(--success-bg); color: var(--success); }
-.key-status.inactive { background: var(--error-bg);   color: var(--error); }
+.mode-switch[aria-checked="true"] { color: var(--success); }
+.mode-switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 20px; }
+.mode-switch-track {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--border);
+  transition: background .15s;
+}
+.mode-switch[aria-checked="true"] .mode-switch-track { background: var(--success); }
+.mode-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(0,0,0,.25);
+  transition: transform .15s;
+}
+.mode-switch[aria-checked="true"] .mode-switch-thumb { transform: translateX(12px); }
 
 /* Settings note */
 .settings-note {

@@ -36,11 +36,15 @@ const CUSTOM_ASK_COPY = {
 };
 
 async function renderModeBadge() {
-  const s   = await loadStoredSettings();
-  const key = (s.userApiKey || '').trim();
-  const el  = document.getElementById('key-status');
-  el.textContent = key ? '● AI Mode' : '● Free Mode';
-  el.className   = 'key-status active';
+  const s      = await loadStoredSettings();
+  const hasKey = Boolean((s.userApiKey || '').trim());
+  const key    = aiActive(s);
+  const el     = document.getElementById('mode-switch');
+  document.getElementById('mode-label').textContent = key ? 'AI Mode' : 'Free Mode';
+  el.title       = hasKey
+    ? `Click to switch to ${key ? 'Free Mode' : 'AI Mode'}. Your key stays saved.`
+    : 'Add an API key in Settings to use AI Mode.';
+  el.setAttribute('aria-checked', String(key));
   document.getElementById('regenerate-btn').classList.toggle('hidden', !key);
   document.getElementById('refine-form').classList.toggle('hidden', !key);
 
@@ -88,6 +92,7 @@ function wireCurrentEvents() {
 }
 
 function wireSettingsEvents() {
+  document.getElementById('mode-switch').addEventListener('click', handleToggleAiMode);
   document.getElementById('save-settings-btn').addEventListener('click', handleSaveSettings);
   document.getElementById('validate-btn').addEventListener('click', handleValidateKey);
   document.getElementById('api-key').addEventListener('keydown', e => {
@@ -220,6 +225,13 @@ function renderHooks() {
 }
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
+async function handleToggleAiMode() {
+  const s = await loadStoredSettings();
+  if (!(s.userApiKey || '').trim()) { switchTab('settings'); return; }
+  await chrome.storage.local.set({ aiEnabled: !aiActive(s) });
+  await renderModeBadge();
+}
+
 async function loadSettings() {
   const s = await loadStoredSettings();
   if (s.userApiKey) document.getElementById('api-key').value = s.userApiKey;
@@ -299,7 +311,7 @@ async function handleValidateKey() {
     btn.textContent = '…';
     btn.disabled = true;
     const { provider, model } = await sendToBackground({ action: 'testApiKey', data: form });
-    await chrome.storage.local.set(form);
+    await chrome.storage.local.set({ ...form, aiEnabled: true });
     el.textContent = `✓ Works with ${provider} (${model}). AI Mode on.`;
     el.className   = 'key-validation-status valid';
     await renderModeBadge();
@@ -475,7 +487,7 @@ async function sendToBackground(msg) {
 }
 
 function loadStoredSettings() {
-  return chrome.storage.local.get(['userApiKey', 'aiProvider', 'aiModel', 'aiBaseUrl', 'userName', 'userBio', 'offerResume', 'resumeFileName', 'resumeSkills']);
+  return chrome.storage.local.get(['userApiKey', 'aiEnabled', 'aiProvider', 'aiModel', 'aiBaseUrl', 'userName', 'userBio', 'offerResume', 'resumeFileName', 'resumeSkills']);
 }
 
 function esc(str) {

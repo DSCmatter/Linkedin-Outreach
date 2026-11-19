@@ -182,7 +182,7 @@ const pctx = vm.createContext({
   }
 });
 vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'utils/providers.js'), 'utf8'), pctx, { filename: 'utils/providers.js' });
-const { detectProvider, resolveConnection, callAI } = vm.runInContext('({ detectProvider, resolveConnection, callAI })', pctx);
+const { detectProvider, resolveConnection, callAI, aiActive } = vm.runInContext('({ detectProvider, resolveConnection, callAI, aiActive })', pctx);
 
 test('provider is detected from the key prefix', () => {
   const cases = { 'sk-ant-api03-x': 'anthropic', 'sk-or-v1-x': 'openrouter', 'gsk_x': 'groq', 'AIzaSyx': 'gemini', 'sk-proj-x': 'openai', 'sk-x': 'openai', 'random': null };
@@ -192,6 +192,14 @@ test('provider is detected from the key prefix', () => {
 test('no key means free mode; unknown key asks the user to pick a provider', () => {
   assert.strictEqual(resolveConnection({ userApiKey: '' }), null);
   assert.throws(() => resolveConnection({ userApiKey: 'xyz' }), /Pick it under Provider/);
+});
+
+test('AI Mode switched off keeps the key but uses the free template', () => {
+  assert.strictEqual(resolveConnection({ userApiKey: 'sk-ant-1', aiEnabled: false }), null);
+  assert.strictEqual(aiActive({ userApiKey: 'sk-ant-1', aiEnabled: false }), false);
+  assert.strictEqual(aiActive({ userApiKey: 'sk-ant-1' }), true, 'existing users with no saved switch stay in AI Mode');
+  assert.strictEqual(aiActive({ userApiKey: '', aiEnabled: true }), false);
+  assert.strictEqual(resolveConnection({ userApiKey: 'sk-ant-1', aiEnabled: true }).id, 'anthropic');
 });
 
 test('custom provider requires a base URL', () => {
@@ -220,6 +228,7 @@ const providerCases = [
     assert.strictEqual(sentModel, c.model);
     assert.ok(text.startsWith('OK from'), `${c.host} parsed reply: ${text}`);
     if (c.host === 'api.together.xyz') assert.ok(sent.url === 'https://api.together.xyz/v1/chat/completions', sent.url);
+    if (sent.body.messages) assert.strictEqual(sent.body.max_tokens, 16, `${c.host} caps output tokens`);
   }
   console.log('ok  all 6 providers: endpoint, auth, model and reply parsing verified');
 
