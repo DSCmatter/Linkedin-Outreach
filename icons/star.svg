@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#BFE3FF" stop-opacity="0.9"/>
+      <stop offset="0.45" stop-color="#4FA8FF" stop-opacity="0.41"/>
+      <stop offset="1" stop-color="#1E6BFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5CC2FF"/>
+      <stop offset="1" stop-color="#1259E6"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="64" cy="64" r="64" fill="url(#glow)"/>
+  <g fill="#8FD0FF" opacity="0.85"><polygon points="61.53,63.20 83.16,5.03 66.47,64.80"/><polygon points="62.82,61.68 119.24,35.85 65.18,66.32"/><polygon points="64.80,61.53 122.97,83.16 63.20,66.47"/><polygon points="66.32,62.82 92.15,119.24 61.68,65.18"/><polygon points="66.47,64.80 44.84,122.97 61.53,63.20"/><polygon points="65.18,66.32 8.76,92.15 62.82,61.68"/><polygon points="63.20,66.47 5.03,44.84 64.80,61.53"/><polygon points="61.68,65.18 35.85,8.76 66.32,62.82"/></g><g fill="#CDEBFF" opacity="0.7"><polygon points="62.63,62.83 93.87,29.02 65.37,65.17"/><polygon points="63.86,62.21 109.86,60.39 64.14,65.79"/><polygon points="65.17,62.63 98.98,93.87 62.83,65.37"/><polygon points="65.79,63.86 67.61,109.86 62.21,64.14"/><polygon points="65.37,65.17 34.13,98.98 62.63,62.83"/><polygon points="64.14,65.79 18.14,67.61 63.86,62.21"/><polygon points="62.83,65.37 29.02,34.13 65.17,62.63"/><polygon points="62.21,64.14 60.39,18.14 65.79,63.86"/></g>
+  <polygon points="64.00,18.00 75.17,48.63 107.75,49.79 82.07,69.87 91.04,101.21 64.00,83.00 36.96,101.21 45.93,69.87 20.25,49.79 52.83,48.63" fill="url(#body)" stroke="#0B3FA8" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="64" cy="67" r="16.6" fill="url(#core)"/>
+</svg>
