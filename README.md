@@ -11,7 +11,7 @@ A Chrome extension that writes short, personalized LinkedIn connection notes fro
 
 To use AI Mode, paste an API key under **Settings** and click **Test**. Use the switch in the header to move between AI Mode and Free Mode. Your key stays saved.
 
-## Key changes in v3.2.0
+## Key changes
 
 The original version often wrote broken notes: quotes cut off mid-word, a headline passed off as a "recent post", and tenure shown as the company. Most of this came from two root causes. The scraper misread LinkedIn's page, and the template cut text without checking where. For each bug, I reproduced it with the old code on real profile data, fixed the cause, and added a test.
 
